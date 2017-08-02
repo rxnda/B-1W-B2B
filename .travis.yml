@@ -1,7 +1,34 @@
 ---
+sudo: required
+services:
+- docker
 language: node_js
 node_js: node
-sudo: false
 script:
 - make lint
 - make critique
+before_deploy:
+- curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+- sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+- sudo apt-get update
+- sudo apt-get -y install docker-ce
+- make docker
+deploy:
+- provider: script
+  script: make google-drive
+  skip_cleanup: true
+  on:
+    tags: true
+- provider: releases
+  api_key:
+    secure: qdWsIlVCIy5Qvact11e77EWQJ6adVFxBX4uK2dwLjuu5lEG5jCDIyMbTs834ghQxsgS9IwihwA8iyR/vww7BwOYN5ob3OUYlOLR+Ii0Wx5F6KUENZ/wn7EgMcutEnoFPOfGNFoYQ2EPdN966jdutqEq2HJHXhsV6/1y2vNBmoyY6bHQLb3pGv1BRH/tm4ZqgQVyhNLoL7Fwmpsfxun/HzQwaPAxMA1RV9bHFC6W8QgHuTu19HT7ujCO8J6oylH2nnnpPSvpq2ToXp/vrSVdS2WvM8cyIB3XltB8epfPxvWrvsi2zhKQ4wHpyVm+Y9XwsIyHZDfeNQCGAeT+DB0tp3gL33AWX/PW1PLGBXe8BP89fJSu5szekPT/qUlWhc7nV/q3tJCeu6s6ONRGPdeZ01E8Iv2otHX72c+AHA4DN03j3wLv6o6RSpQhXkL8bH/Pob0ScMnyQAAzzX+Pw8CY3Thk+pGiRpKcLUSOEnB7YqSkLP+4Ss1bxUyEkg3nIEsqUBlyDSfTDLifC4llRraSq+TJ0+v4DvA+ZcWEUJzQMcLYrGz7bJ6q652JdAe4ukNOh2h8x6o0r5Q7+mbAbMPSCpaRuGaWd/NBmNfvfWUJ/Z9xIVI4SJX2wydfDsjanOiLerVfRcawoPzE7h+xo9UuqxBGttJ0xZDAF+31QNqinFfw=
+  skip_cleanup: true
+  file_glob: true
+  file: build/*
+  on:
+    tags: true
+env:
+  global:
+  - secure: "CHxUUNr2+IBFOXXGVyCR1kuP6/Hf945Nopac/mmg6xPlqx85BQAsmYlr27kw2Ej/lliSLbmy9RcmuCDV3CbC8H3aFlEvVV5Dar8Up5goM/FlDJeZ6NOmsaCq138+tHIwGhREiiVaMnwOG+nMRzhyG4mz6BGFAzQak7zn0V+PtxBW2Ij+9lkxTTG68pDQBNBwneU8VjhTRDhGb7h3LAbXEup8+GYSDKif59/U++ohsJgqUkxsp6k55AmjsFnuEr/97uriMKkGXOGCQVnWU6n7K66nCXa24phHbCw7/6GSai6TX6dt1c3iN7/6iSCh6g/ui1a5Vg7lcZoTH3Vwtv1LU66nEGt+Pk2UGswgi4b/BUZtxqkzJX4EcDO+4QaCzyBra+lasUzcfW1g5Ez8laG/Fz4RBNe17MPyLe6E/b3edOe8zFrXyzxsZABFOa3mvfdKHmLND3+3O+BgaUTlsIEUnlvNHpvO9wll7Wr2+21XfKzLqx3IkHLg2sZpRipV6IvdJ9FeQnSLH+S3F/yZGhYZ+yq0oqyCGtoiz96UyusI4W9SnNzXahxFSuWrHQ2l0biw2PDHja6XcnW1mF/udKrKq0BBgrmlhXX9ZO2wqLF/bQ2kc6noXYGNNkgAa/BALCzDg5fjceZ1snIZTH8bz3vHEVSHZj13ENTSy/1Ia4JyfOQ="
+  - secure: "wR6OchF4kqSRgpJqNYppHiUwJxVlFHP4ITasxw9ivawdGCyle1cH95+PwWtiiCoRjyDd1HAM/nInJEf997qhYl1dfWF07daPyHpndJuxe7lwPAHpfT7TcNmRYuqx6vUuB//L0JYZ0lES7mZC8y0/4NY+LatQv2JOEaRDYfkKcpzUR3DeZa7pt8xmdxE803VFiilDnsUT6HSZfM4BNZ6YDXs6XtJY2w83wZbR1whH39DBQJvGslLg7unZnMwYAQKSOT9GdQVUP9qhtBMZwYqRb3ZyVSrUgnxqLjUpq4MCQKOKaxXk9o2U4JXr0r9Z96WMv/EXGx7jKLxufH64haeyxYKA5kXBWTuyyHAMv6BJUBkLHjAz2+PkAUk6u3puVW1SMkGoQJO/1tRuuCBGWnJejDUJp/ViswLTNHRCKkEZA7JZ/VbuUnSFjVqWaaZDS6hIdfLZsqdt6Jd6C58o594QjST0IbmfGxerT8k3cj/v/UcscoA3RISQ41G0e0ednBcmnXD41mtX0WMLuSaOoMzdXHPPZvDglLvbXlNscHxUaFRQEaQX2o+XyFgOvUwUSuSt7JujQ1cPGCJkx9fBZyzTCtVgfHsrE4gAGuVDubTIKX4Ug6vfNAkzwbx7b/dlw169HvaCml4U2D1pZvIejc6J7We51XP946kQncIk4E4ln9M="
+  - secure: "t6v/tAMyx2SjuB4qvStBBlGwIRiBGSeIpDFMHPzg7mXeS/Izrr91T7OGC6Dhws8ma6ANosKFOwW51fY/H9sYm7s7rcmpGmWTCdFSENuJE94FG5ZvBEm8QpsuoZPmsllFjGaT7d6HSq4HsMhMwLaLpcrZHpcPpfO14CTiAb6MKw3gw3lGj/T7LtSPPyXd90weaWFchExQyVdDYN1EBMHqLYKfvz61+/T8OaPRJcuxPBweYnmXG5zyRxlEobR+PiJhn7sElb/kqWhlXAW3e+pOwgX7tjvnBZWM6ZMleQPpaX3Yp6pYrhhhqS/Tpuq1pjK3Tue/FFAhqWOa2BQgT/lnI1WDRa/IUrB8Qz61jjMlCpk88eazGU8W6QfD2ZwXNniT83CbBfHZVsSf6R8TQQxVAAtwe3X6kxt4iORji/66VNf3PJf7q0+tQ9M2lhJwj3IbBEhEAPSF8quhUt8s7iLDaxrdxDXeV9WURcGrJtEgXkVO5yVz6XcXDf7i8WTRWgc0VVbiRA2U8Dtc89EEoVrG9LHPdT1ivItkcVqTvRymZjjA/29od4kygZmlh6NCFg1jcKRjpJJBbl1PISzsXblxhXTZYjcxHki6ckAagWEBhQ2v2qIUm2mYX/Rfl/ZAaBzjOubiKr/NTsE4kBN3lQ5eehm5ckXLkiXj4b/qN21aZ+I="
